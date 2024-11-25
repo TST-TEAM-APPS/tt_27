@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
+import 'package:tt_27/models/training.dart';
+import 'package:tt_27/styles/app_theme.dart';
 
 class WeeklyStatisticsWidget extends StatefulWidget {
   const WeeklyStatisticsWidget({super.key});
@@ -9,36 +13,103 @@ class WeeklyStatisticsWidget extends StatefulWidget {
 
 class _WeeklyStatisticsWidgetState extends State<WeeklyStatisticsWidget> {
   int _currentWeekIndex = 0;
+  List<Map<String, dynamic>> _weeklyData = [];
+  List<DateTime> _weekStartDates = [];
 
-  // Пример данных для нескольких недель
-  final List<List<int>> _weeklyData = [
-    [50, 30, 60, 70, 90, 20, 40], // Неделя 1
-    [20, 40, 50, 80, 100, 60, 70], // Неделя 2
-    [60, 30, 40, 50, 90, 80, 70], // Неделя 3
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadWeeklyData();
+  }
 
-  // Дни для каждой недели
-  final List<List<String>> _weekDays = [
-    ["9", "10", "11", "12", "13", "14", "15"], // Неделя 1
-    ["16", "17", "18", "19", "20", "21", "22"], // Неделя 2
-    ["23", "24", "25", "26", "27", "28", "29"], // Неделя 3
-  ];
+  Future<void> _loadWeeklyData() async {
+    var box = await Hive.openBox<Training>('trainings');
+    List<Training> trainings = box.values.toList();
+
+    // Group trainings by week starting from the beginning of the month
+    Map<int, List<Training>> weekGroups = {};
+
+    for (var training in trainings) {
+      DateTime date = training.date;
+      int weekOfMonth = ((date.day - 1) / 7).floor(); // 0-based index
+      int key = date.month * 100 + weekOfMonth; // Unique key for each week
+      if (!weekGroups.containsKey(key)) {
+        weekGroups[key] = [];
+      }
+      weekGroups[key]!.add(training);
+    }
+
+    // Sort the weeks
+    List<int> sortedKeys = weekGroups.keys.toList()..sort();
+
+    // Prepare data for the widget
+    _weeklyData = [];
+    _weekStartDates = [];
+
+    for (var key in sortedKeys) {
+      List<Training> weekTrainings = weekGroups[key]!;
+
+      // Create a list of 7 days starting from the first day of the week
+      DateTime weekStartDate = DateTime(
+        weekTrainings.first.date.year,
+        weekTrainings.first.date.month,
+        (weekTrainings.first.date.day - (weekTrainings.first.date.weekday - 1)),
+      );
+
+      List<int> dailyValues = List.generate(7, (index) => 0);
+      List<String> days = List.generate(7, (index) {
+        DateTime day = weekStartDate.add(Duration(days: index));
+        return DateFormat('d').format(day);
+      });
+
+      // Sum up the durations or counts for each day
+      for (var training in weekTrainings) {
+        int dayIndex = training.date.weekday - 1; // 0-based index
+        // You can sum durations or counts here
+        dailyValues[dayIndex] += 1; // Counting the number of trainings
+        // Alternatively, sum durations:
+        // dailyValues[dayIndex] += training.durationInMinutes;
+      }
+
+      _weeklyData.add({
+        'values': dailyValues,
+        'days': days,
+      });
+      _weekStartDates.add(weekStartDate);
+    }
+
+    setState(() {});
+  }
 
   void _changeWeek(int direction) {
     setState(() {
       _currentWeekIndex = (_currentWeekIndex + direction) % _weeklyData.length;
+      if (_currentWeekIndex < 0) {
+        _currentWeekIndex = _weeklyData.length - 1;
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final data = _weeklyData[_currentWeekIndex];
-    final days = _weekDays[_currentWeekIndex];
+    if (_weeklyData.isEmpty) {
+      return const Center(
+        child: Text(
+          "No data available",
+          style: TextStyle(color: Colors.grey),
+        ),
+      );
+    }
+
+    final data = _weeklyData[_currentWeekIndex]['values'] as List<int>;
+    final days = _weeklyData[_currentWeekIndex]['days'] as List<String>;
+    DateTime weekStartDate = _weekStartDates[_currentWeekIndex];
+    String monthName = DateFormat('MMMM').format(weekStartDate);
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF2B2B2B), // Темный фон
+        color: AppTheme.surface, // Dark background
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -56,7 +127,7 @@ class _WeeklyStatisticsWidgetState extends State<WeeklyStatisticsWidget> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment:
-                CrossAxisAlignment.end, // Все столбцы выравнены снизу
+                CrossAxisAlignment.end, // Align bars at the bottom
             children: List.generate(data.length, (index) {
               return _BarChartItem(
                 value: data[index],
@@ -72,16 +143,16 @@ class _WeeklyStatisticsWidgetState extends State<WeeklyStatisticsWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Week ${_currentWeekIndex + 1}",
+                    monthName,
                     style: const TextStyle(
                       fontSize: 16,
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const Text(
-                    "1 week",
-                    style: TextStyle(
+                  Text(
+                    "Week ${_currentWeekIndex + 1}",
+                    style: const TextStyle(
                       fontSize: 14,
                       color: Colors.grey,
                     ),
@@ -125,14 +196,18 @@ class _BarChartItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double maxBarHeight = 100.0; // Maximum height of the bar
+
     return Column(
-      mainAxisAlignment: MainAxisAlignment.end, // Столбцы выровнены снизу
+      mainAxisAlignment: MainAxisAlignment.end, // Align bars at the bottom
       children: [
         Container(
-          height: value.toDouble(),
+          height: value > 0
+              ? (value / 10 * maxBarHeight).clamp(10.0, maxBarHeight)
+              : 10.0,
           width: 16,
           decoration: BoxDecoration(
-            color: const Color(0xFF6B75FF), // Цвет столбца
+            color: AppTheme.primary, // Bar color
             borderRadius: BorderRadius.circular(8),
           ),
         ),

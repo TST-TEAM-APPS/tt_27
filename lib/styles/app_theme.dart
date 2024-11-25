@@ -14,6 +14,12 @@ class AppTheme {
     fontWeight: FontWeight.w600,
   );
 
+  static const TextStyle displaySmall = TextStyle(
+    fontSize: 18,
+    height: 1.33, // 32px line height
+    fontWeight: FontWeight.w600,
+  );
+
   static const TextStyle bodyLarge = TextStyle(
     fontSize: 16,
     height: 1.375, // 22px line height

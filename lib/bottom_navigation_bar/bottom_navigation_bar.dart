@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tt_27/home_view/add_training_bottom_sheet.dart';
 import 'package:tt_27/home_view/home_page.dart';
+import 'package:tt_27/setting_view/setting_page.dart';
+import 'package:tt_27/statistic_view/statistic_page.dart';
 import 'package:tt_27/styles/app_theme.dart';
 
 class CustomNavigationBar extends StatefulWidget {
@@ -13,33 +15,42 @@ class CustomNavigationBar extends StatefulWidget {
 class _CustomNavigationBarState extends State<CustomNavigationBar> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = [
-    const HomePage(),
-    const HomePage(),
-    const HomePage(),
+  final homePageKey = GlobalKey<HomePageState>();
+
+  late final List<Widget> _pages = [
+    HomePage(key: homePageKey),
+    const StatisticPage(),
+    const SettingsPage(),
     const HomePage(),
   ];
 
   // Колбек для отображения BottomSheet
-  void showAddTrainingBottomSheet(BuildContext context) {
-    showModalBottomSheet(
+  void showAddTrainingBottomSheet(BuildContext context) async {
+    bool? result = await showModalBottomSheet<bool>(
       context: context,
-      isScrollControlled: true, // Делает BottomSheet адаптивным к содержимому
-      backgroundColor: Colors.transparent, // Убирает фоновый цвет
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
       builder: (context) {
         return DraggableScrollableSheet(
-          initialChildSize: 0.7, // Высота BottomSheet при открытии
-          maxChildSize: 0.9, // Максимальная высота
-          minChildSize: 0.5, // Минимальная высота
+          initialChildSize: 0.65,
+          maxChildSize: 0.7,
+          minChildSize: 0.5,
           builder: (context, scrollController) {
             return SingleChildScrollView(
               controller: scrollController,
-              child: const AddTrainingBottomSheet(), // Ваш BottomSheet
+              child: const AddTrainingBottomSheet(),
             );
           },
         );
       },
     );
+
+    if (result == true) {
+      // Если была добавлена новая тренировка, обновляем список
+      if (_currentIndex == 0 && homePageKey.currentState != null) {
+        homePageKey.currentState!.refreshTrainings();
+      }
+    }
   }
 
   @override
@@ -104,7 +115,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            _NavBarItem(
+                            _NavBarItemS(
                               icon: Icons.add,
                               isActive: _currentIndex == 3,
                               onTap: () => showAddTrainingBottomSheet(context),
@@ -152,6 +163,42 @@ class _NavBarItem extends StatelessWidget {
           Icon(
             icon,
             color: isActive ? AppTheme.primary : Colors.grey,
+            size: 28,
+          ),
+          if (isActive)
+            Container(
+              margin: const EdgeInsets.only(top: 4),
+              height: 2,
+              width: 30,
+              color: AppTheme.primary, // Цвет индикатора
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NavBarItemS extends StatelessWidget {
+  final IconData icon;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  const _NavBarItemS({
+    required this.icon,
+    this.isActive = false,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            color: isActive ? AppTheme.primary : Colors.white,
             size: 28,
           ),
           if (isActive)
