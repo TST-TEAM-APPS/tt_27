@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gaimon/gaimon.dart';
 import 'package:tt_27/styles/app_theme.dart';
 
 class AddNoteBottomSheet extends StatefulWidget {
@@ -53,7 +54,10 @@ class _AddNoteBottomSheetState extends State<AddNoteBottomSheet> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.close, color: Colors.white),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Gaimon.selection();
+                  },
                 ),
               ],
             ),
@@ -137,6 +141,7 @@ class _AddNoteBottomSheetState extends State<AddNoteBottomSheet> {
                     "feeling": selectedFeeling,
                     "note": _noteController.text,
                   });
+                  Gaimon.selection();
                 },
                 child: const Text(
                   "Save",

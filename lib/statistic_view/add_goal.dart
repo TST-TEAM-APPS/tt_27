@@ -1,12 +1,16 @@
+// widgets/add_goal.dart
+
 import 'package:flutter/material.dart';
+import 'package:gaimon/gaimon.dart';
 import 'package:hive/hive.dart';
 import 'package:tt_27/models/goal.dart';
 import 'package:tt_27/styles/app_theme.dart';
 
 class AddGoal extends StatefulWidget {
   final VoidCallback onSave;
+  final Goal? existingGoal; // Новый параметр для редактирования цели
 
-  const AddGoal({super.key, required this.onSave});
+  const AddGoal({super.key, required this.onSave, this.existingGoal});
 
   @override
   State<AddGoal> createState() => _AddGoalState();
@@ -31,7 +35,16 @@ class _AddGoalState extends State<AddGoal> {
   @override
   void initState() {
     super.initState();
-    selectedCategory = categories[0]["label"]!;
+    if (widget.existingGoal != null) {
+      // Редактирование существующей цели
+      _titleController.text = widget.existingGoal!.title;
+      _descriptionController.text = widget.existingGoal!.description;
+      _targetCountController.text = widget.existingGoal!.targetCount.toString();
+      selectedCategory = widget.existingGoal!.category;
+    } else {
+      // Добавление новой цели
+      selectedCategory = categories[0]["label"]!;
+    }
   }
 
   @override
@@ -76,19 +89,43 @@ class _AddGoalState extends State<AddGoal> {
       return;
     }
 
-    Goal newGoal = Goal(
-      category: selectedCategory,
-      title: title,
-      description: description,
-      targetCount: targetCount,
-    );
+    if (widget.existingGoal != null) {
+      // Обновление существующей цели
+      widget.existingGoal!.title = title;
+      widget.existingGoal!.description = description;
+      widget.existingGoal!.category = selectedCategory;
+      widget.existingGoal!.targetCount = targetCount;
 
-    try {
-      var box = await Hive.openBox<Goal>('goals');
-      await box.add(newGoal);
-      print('Goal saved: ${newGoal.title}');
-    } catch (e) {
-      print('Error saving goal: $e');
+      try {
+        await widget.existingGoal!.save();
+        print('Goal updated: ${widget.existingGoal!.title}');
+      } catch (e) {
+        print('Error updating goal: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error updating goal')),
+        );
+        return;
+      }
+    } else {
+      // Добавление новой цели
+      Goal newGoal = Goal(
+        category: selectedCategory,
+        title: title,
+        description: description,
+        targetCount: targetCount,
+      );
+
+      try {
+        var box = await Hive.openBox<Goal>('goals');
+        await box.add(newGoal);
+        print('Goal saved: ${newGoal.title}');
+      } catch (e) {
+        print('Error saving goal: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error saving goal')),
+        );
+        return;
+      }
     }
 
     widget.onSave();
@@ -125,7 +162,7 @@ class _AddGoalState extends State<AddGoal> {
             const SizedBox(height: 16),
             Center(
               child: Text(
-                'Add goal',
+                widget.existingGoal != null ? 'Edit goal' : 'Add goal',
                 style:
                     AppTheme.displayMedium.copyWith(color: AppTheme.secondary),
               ),
@@ -150,6 +187,7 @@ class _AddGoalState extends State<AddGoal> {
                       setState(() {
                         selectedCategory = category["label"]!;
                       });
+                      Gaimon.selection();
                     },
                     child: Container(
                       margin: const EdgeInsets.only(right: 8),
@@ -242,7 +280,10 @@ class _AddGoalState extends State<AddGoal> {
             const SizedBox(height: 16),
             // Кнопка сохранения цели
             ElevatedButton(
-              onPressed: _saveGoal,
+              onPressed: () {
+                _saveGoal.call();
+                Gaimon.selection();
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primary,
                 shape: RoundedRectangleBorder(

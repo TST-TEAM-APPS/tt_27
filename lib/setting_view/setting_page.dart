@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gaimon/gaimon.dart';
 import 'package:tt_27/styles/app_theme.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -88,7 +89,8 @@ class SettingsPage extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+
+              const SizedBox(height: 200),
             ],
           ),
         ),
@@ -138,7 +140,7 @@ class SettingsPage extends StatelessWidget {
   // Карточка обратной связи
   Widget _buildFeedbackCard() {
     return Container(
-      height: 150,
+      height: 170,
       decoration: BoxDecoration(
         color: const Color(0xFF2C2C2E), // Фон карточки
         borderRadius: BorderRadius.circular(12), // Скругленные углы
@@ -170,7 +172,9 @@ class SettingsPage extends StatelessWidget {
               height: 1.5,
             ),
           ),
-          const Spacer(),
+          SizedBox(
+            height: 20,
+          ),
           Align(
             alignment: Alignment.centerRight,
             child: CupertinoButton(
@@ -178,7 +182,7 @@ class SettingsPage extends StatelessWidget {
               color: AppTheme.primary, // Цвет кнопки
               borderRadius: BorderRadius.circular(8),
               onPressed: () {
-                // Действие нажатия
+                Gaimon.selection();
               },
               child: const Text(
                 'Send',

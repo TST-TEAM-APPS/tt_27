@@ -1,5 +1,8 @@
+// statistic_view/statistic_page.dart
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gaimon/gaimon.dart';
 import 'package:hive/hive.dart';
 import 'package:tt_27/models/goal.dart';
 import 'package:tt_27/models/training.dart';
@@ -91,6 +94,33 @@ class _StatisticPageState extends State<StatisticPage> {
     );
   }
 
+  void _editGoal(Goal goal) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled:
+          true, // Позволяет использовать полный размер экрана при необходимости
+      backgroundColor: Colors
+          .transparent, // Убираем стандартный фон для настройки кастомного
+      builder: (context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: AppTheme.background, // Темный фон
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(25.0),
+              topRight: Radius.circular(25.0),
+            ),
+          ),
+          child: AddGoal(
+            existingGoal: goal, // Передаём существующую цель для редактирования
+            onSave: () {
+              _loadGoals();
+            },
+          ),
+        );
+      },
+    );
+  }
+
   void _deleteGoal(int index) async {
     await goals[index].delete();
     _loadGoals();
@@ -99,9 +129,9 @@ class _StatisticPageState extends State<StatisticPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.background,
-      body: SafeArea(
-        child: RefreshIndicator(
+        backgroundColor: AppTheme.background,
+        body: SafeArea(
+            child: RefreshIndicator(
           onRefresh: () async {
             await _loadActivityData();
             await _loadGoals();
@@ -135,7 +165,7 @@ class _StatisticPageState extends State<StatisticPage> {
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Container(
-                            width: 100,
+                            width: 110,
                             decoration: BoxDecoration(
                               color: AppTheme.surface,
                               borderRadius: BorderRadius.circular(12),
@@ -201,6 +231,11 @@ class _StatisticPageState extends State<StatisticPage> {
                                   onDelete: () {
                                     _deleteGoal(goals.indexOf(goal));
                                   },
+                                  onTap: () {
+                                    _editGoal(goal);
+                                    Gaimon
+                                        .selection(); // Обработка нажатия на цель
+                                  },
                                 ),
                               );
                             }).toList(),
@@ -220,7 +255,7 @@ class _StatisticPageState extends State<StatisticPage> {
                             ),
                             child: Stack(
                               children: [
-                                // Затемняющий слой должен быть первым
+                                // Затемняющий слой
                                 Container(
                                   decoration: BoxDecoration(
                                     color: Colors.black.withOpacity(
@@ -229,13 +264,13 @@ class _StatisticPageState extends State<StatisticPage> {
                                         12), // Совпадает с родительским контейнером
                                   ),
                                 ),
-                                // Текст располагается поверх затемняющего слоя
+                                // Текст поверх затемняющего слоя
                                 Center(
                                   child: const Text(
                                     'No goals added yet.',
                                     style: TextStyle(
                                       color: Color.fromARGB(199, 255, 255,
-                                          255), // Изменил цвет текста на белый для лучшей видимости
+                                          255), // Белый цвет текста для лучшей видимости
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -255,7 +290,10 @@ class _StatisticPageState extends State<StatisticPage> {
                       color: AppTheme.onSurface, // Цвет кнопки
                       borderRadius:
                           BorderRadius.circular(24), // Скругленные углы
-                      onPressed: _addGoal,
+                      onPressed: () {
+                        _addGoal.call();
+                        Gaimon.selection();
+                      },
                       child: Row(
                         mainAxisSize: MainAxisSize.min, // Размер под содержимое
                         children: [
@@ -284,8 +322,6 @@ class _StatisticPageState extends State<StatisticPage> {
               ),
             ),
           ),
-        ),
-      ),
-    );
+        )));
   }
 }

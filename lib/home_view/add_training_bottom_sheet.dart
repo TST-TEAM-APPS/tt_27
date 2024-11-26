@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gaimon/gaimon.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:tt_27/models/goal.dart';
@@ -67,42 +68,54 @@ class _AddTrainingBottomSheetState extends State<AddTrainingBottomSheet> {
   void _showDurationPicker() {
     showCupertinoModalPopup(
       context: context,
-      builder: (_) => Container(
-        height: 300,
-        color: const Color(0xFF2B2B2B),
-        child: Column(
-          children: [
-            SizedBox(
-              height: 200,
-              child: CupertinoTimerPicker(
-                mode: CupertinoTimerPickerMode.hm,
-                minuteInterval: 1,
-                initialTimerDuration: Duration(
-                  hours: int.tryParse(durationHours) ?? 0,
-                  minutes: int.tryParse(durationMinutes) ?? 0,
+      builder: (_) => CupertinoTheme(
+        data: CupertinoThemeData(
+          textTheme: CupertinoTextThemeData(
+            pickerTextStyle: const TextStyle(
+              color: Colors.white, // Белый цвет текста
+              fontSize: 22, // Размер текста
+              fontWeight: FontWeight.w400, // Жирный шрифт
+            ),
+          ),
+        ),
+        child: Container(
+          height: 300,
+          color: const Color(0xFF2B2B2B), // Цвет фона
+          child: Column(
+            children: [
+              SizedBox(
+                height: 200,
+                child: CupertinoTimerPicker(
+                  mode: CupertinoTimerPickerMode.hm,
+                  minuteInterval: 1,
+                  initialTimerDuration: Duration(
+                    hours: int.tryParse(durationHours) ?? 0,
+                    minutes: int.tryParse(durationMinutes) ?? 0,
+                  ),
+                  onTimerDurationChanged: (Duration changedTimer) {
+                    setState(() {
+                      durationHours =
+                          changedTimer.inHours.toString().padLeft(2, '0');
+                      durationMinutes = (changedTimer.inMinutes % 60)
+                          .toString()
+                          .padLeft(2, '0');
+                    });
+                  },
                 ),
-                onTimerDurationChanged: (Duration changedTimer) {
-                  setState(() {
-                    durationHours =
-                        changedTimer.inHours.toString().padLeft(2, '0');
-                    durationMinutes = (changedTimer.inMinutes % 60)
-                        .toString()
-                        .padLeft(2, '0');
-                  });
+              ),
+              // Кнопка "Done"
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Gaimon.selection();
                 },
+                child: const Text(
+                  'Done',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
-            ),
-            // Close button
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text(
-                'Done',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -146,7 +159,10 @@ class _AddTrainingBottomSheetState extends State<AddTrainingBottomSheet> {
                     ),
                   ),
                   IconButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Gaimon.selection();
+                    },
                     icon: const Icon(Icons.close, color: Colors.white),
                   ),
                 ],
@@ -173,6 +189,7 @@ class _AddTrainingBottomSheetState extends State<AddTrainingBottomSheet> {
                         setState(() {
                           selectedCategory = category["label"]!;
                         });
+                        Gaimon.selection();
                       },
                       child: Container(
                         margin: const EdgeInsets.only(right: 8),
@@ -240,6 +257,7 @@ class _AddTrainingBottomSheetState extends State<AddTrainingBottomSheet> {
                       (value) {},
                       onTap: () {
                         _showDurationPicker();
+                        Gaimon.selection();
                       },
                     ),
                   ),
@@ -350,6 +368,7 @@ class _AddTrainingBottomSheetState extends State<AddTrainingBottomSheet> {
                   if (widget.onSave != null) {
                     widget.onSave!();
                   }
+                  Gaimon.selection();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF6B75FF),
@@ -388,6 +407,7 @@ class _AddTrainingBottomSheetState extends State<AddTrainingBottomSheet> {
         setState(() {
           intensity = label;
         });
+        Gaimon.selection();
       },
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -401,8 +421,10 @@ class _AddTrainingBottomSheetState extends State<AddTrainingBottomSheet> {
         child: Center(
           child: Text(
             label,
-            style: AppTheme.bodyMedium.copyWith(
-              color: intensity == label ? AppTheme.primary : AppTheme.onPrimary,
+            style: AppTheme.bodySmall.copyWith(
+              color: intensity == label
+                  ? AppTheme.primary
+                  : const Color.fromARGB(146, 255, 255, 255),
             ),
           ),
         ),
@@ -433,7 +455,10 @@ class _AddTrainingBottomSheetState extends State<AddTrainingBottomSheet> {
           onChanged: onChanged,
           style: const TextStyle(color: Colors.white),
           readOnly: onTap != null,
-          onTap: onTap,
+          onTap: () {
+            onTap;
+            Gaimon.selection();
+          },
           keyboardType:
               onTap == null ? TextInputType.number : TextInputType.none,
           controller: controller,

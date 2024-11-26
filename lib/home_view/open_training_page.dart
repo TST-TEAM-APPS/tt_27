@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gaimon/gaimon.dart';
 import 'package:intl/intl.dart';
 import 'package:tt_27/models/training.dart';
 import 'package:tt_27/models/note.dart';
@@ -99,7 +100,11 @@ class _OpenTrainingPageState extends State<OpenTrainingPage> {
                 alignment: Alignment.topRight,
                 child: CupertinoButton(
                   padding: EdgeInsets.zero,
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+
+                    Gaimon.selection();
+                  },
                   child: const Icon(
                     Icons.close,
                     color: Colors.white,
@@ -129,7 +134,11 @@ class _OpenTrainingPageState extends State<OpenTrainingPage> {
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       color: AppTheme.surface,
                       borderRadius: BorderRadius.circular(12),
-                      onPressed: () => Navigator.of(context).pop(),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+
+                        Gaimon.selection();
+                      },
                       child: const Text(
                         "Cancel",
                         style: TextStyle(color: Colors.white, fontSize: 16),
@@ -146,7 +155,8 @@ class _OpenTrainingPageState extends State<OpenTrainingPage> {
                       onPressed: () {
                         widget.training.delete();
                         Navigator.of(context).pop(); // Закрываем диалог
-                        Navigator.of(context).pop(true); // Обновляем список
+                        Navigator.of(context).pop(true);
+                        Gaimon.selection(); // Обновляем список
                       },
                       child: const Text(
                         "Delete",
@@ -190,6 +200,7 @@ class _OpenTrainingPageState extends State<OpenTrainingPage> {
           icon: const Icon(Icons.arrow_back, color: AppTheme.onPrimary),
           onPressed: () {
             Navigator.pop(context);
+            Gaimon.selection();
           },
         ),
       ),
@@ -345,6 +356,7 @@ class _OpenTrainingPageState extends State<OpenTrainingPage> {
                               backgroundColor: Colors.transparent,
                               onPressed: () {
                                 _showEditTrainingBottomSheet(context);
+                                Gaimon.selection();
                               },
                             ),
                           ),
@@ -364,6 +376,7 @@ class _OpenTrainingPageState extends State<OpenTrainingPage> {
                               backgroundColor: Colors.transparent,
                               onPressed: () {
                                 _confirmDeleteTraining(context);
+                                Gaimon.selection();
                               },
                             ),
                           ),
@@ -382,6 +395,7 @@ class _OpenTrainingPageState extends State<OpenTrainingPage> {
                       backgroundColor: Colors.blue,
                       onPressed: () {
                         showAddNoteBottomSheet(context);
+                        Gaimon.selection();
                       },
                       isRounded: true,
                     ),
@@ -437,7 +451,10 @@ class _OpenTrainingPageState extends State<OpenTrainingPage> {
   }) {
     return CupertinoButton(
       padding: EdgeInsets.zero,
-      onPressed: onPressed,
+      onPressed: () {
+        onPressed.call();
+        Gaimon.selection();
+      },
       child: Container(
         decoration: BoxDecoration(
           color: backgroundColor,

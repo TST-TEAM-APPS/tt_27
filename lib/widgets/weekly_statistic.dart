@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gaimon/gaimon.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:tt_27/models/training.dart';
@@ -162,14 +163,21 @@ class _WeeklyStatisticsWidgetState extends State<WeeklyStatisticsWidget> {
               Row(
                 children: [
                   IconButton(
-                    onPressed: () => _changeWeek(-1),
+                    onPressed: () {
+                      _changeWeek(-1);
+
+                      Gaimon.selection();
+                    },
                     icon: const Icon(
                       Icons.arrow_back_ios_new,
                       color: Colors.white,
                     ),
                   ),
                   IconButton(
-                    onPressed: () => _changeWeek(1),
+                    onPressed: () {
+                      _changeWeek(1);
+                      Gaimon.selection();
+                    },
                     icon: const Icon(
                       Icons.arrow_forward_ios,
                       color: Colors.white,

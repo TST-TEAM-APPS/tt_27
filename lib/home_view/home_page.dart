@@ -2,6 +2,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gaimon/gaimon.dart';
 import 'package:hive_flutter/hive_flutter.dart'; // Используйте hive_flutter
 import 'package:tt_27/home_view/add_feeling_bottom_sheet.dart';
 import 'package:tt_27/home_view/open_training_page.dart';
@@ -71,7 +72,8 @@ class HomePageState extends State<HomePage> {
     loadTrainings(filter: selectedActivityFilter);
   }
 
-  void _openAddFeelingSheet() {
+  // Модифицированный метод для открытия BottomSheet с возможностью передачи существующего настроения
+  void _openAddFeelingSheet(Feeling? existingFeeling) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true, // Позволяет листу адаптироваться под содержимое
@@ -85,10 +87,13 @@ class HomePageState extends State<HomePage> {
           ),
           child: Container(
             decoration: const BoxDecoration(
-              color: Colors.black, // Темный фон
+              color: AppTheme.background, // Темный фон
               borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
             ),
-            child: const AddFeelingSheet(),
+            child: AddFeelingSheet(
+              existingFeeling:
+                  existingFeeling, // Передача существующего настроения
+            ),
           ),
         );
       },
@@ -121,7 +126,7 @@ class HomePageState extends State<HomePage> {
 
                   return DailyFeelingWidget(
                     feeling: todayFeeling,
-                    onAddFeeling: _openAddFeelingSheet,
+                    onAddFeeling: () => _openAddFeelingSheet(todayFeeling),
                   );
                 },
               ),
@@ -184,6 +189,7 @@ class HomePageState extends State<HomePage> {
                             }
                             loadTrainings(filter: selectedActivityFilter);
                           });
+                          Gaimon.selection();
                         },
                       ),
                     );
@@ -215,6 +221,7 @@ class HomePageState extends State<HomePage> {
                                 refreshTrainings();
                               }
                             });
+                            Gaimon.selection();
                           },
                         );
                       },
@@ -344,7 +351,10 @@ class ActivityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        onTap.call();
+        Gaimon.selection();
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         decoration: BoxDecoration(

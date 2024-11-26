@@ -1,7 +1,11 @@
+// onboarding_view/onboarding_page.dart
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gaimon/gaimon.dart';
 import 'package:tt_27/bottom_navigation_bar/bottom_navigation_bar.dart';
 import 'package:tt_27/styles/app_theme.dart';
+import 'package:hive/hive.dart'; // Добавьте импорт Hive
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({Key? key}) : super(key: key);
@@ -38,18 +42,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     },
   ];
 
-  void _nextPage() {
+  void _nextPage() async {
     if (_currentIndex < _pages.length - 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     } else {
+      // Установка флага завершения онбординга
+      var settingsBox = Hive.box('settings');
+      await settingsBox.put('isOnboardingCompleted', true);
+
       // Переход к следующему экрану
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => CustomNavigationBar(),
+          builder: (context) => const CustomNavigationBar(),
         ),
       );
     }
@@ -102,7 +110,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 16,
-                        color: Color.fromARGB(255, 58, 58, 58),
+                        color: Color.fromARGB(255, 255, 255, 255),
                         height: 1.5,
                       ),
                     ),
@@ -113,7 +121,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ? const Color(0xFF5B5CFF)
                           : AppTheme.primary,
                       borderRadius: BorderRadius.circular(24),
-                      onPressed: _nextPage,
+                      onPressed: () {
+                        _nextPage();
+
+                        Gaimon.selection();
+                      },
                       child: Text(
                         _currentIndex == _pages.length - 1
                             ? 'Get started'
@@ -125,6 +137,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ),
                       ),
                     ),
+
                     const SizedBox(height: 40),
                   ],
                 ),

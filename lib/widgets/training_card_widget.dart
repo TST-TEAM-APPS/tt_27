@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gaimon/gaimon.dart';
 import 'package:intl/intl.dart';
 import 'package:tt_27/models/training.dart';
 import 'package:tt_27/styles/app_theme.dart';
@@ -17,7 +18,10 @@ class TrainingCard extends StatelessWidget {
     int minutes = training.durationInMinutes % 60;
 
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        onTap.call();
+        Gaimon.selection();
+      },
       child: Container(
         decoration: BoxDecoration(
           color: AppTheme.surface,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gaimon/gaimon.dart';
 import 'package:tt_27/home_view/add_training_bottom_sheet.dart';
 import 'package:tt_27/home_view/home_page.dart';
 import 'package:tt_27/setting_view/setting_page.dart';
@@ -156,7 +157,10 @@ class _NavBarItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        Gaimon.selection(); // Выполняем вибрацию
+        onTap.call();
+      },
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -192,7 +196,10 @@ class _NavBarItemS extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        Gaimon.selection(); // Выполняем вибрацию
+        onTap.call();
+      },
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

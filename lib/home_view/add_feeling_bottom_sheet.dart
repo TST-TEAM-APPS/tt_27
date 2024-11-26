@@ -2,8 +2,10 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gaimon/gaimon.dart';
 import 'package:hive/hive.dart';
 import 'package:tt_27/models/feeling.dart';
+import 'package:tt_27/styles/app_theme.dart';
 
 class AddFeelingSheet extends StatefulWidget {
   final Feeling? existingFeeling;
@@ -143,9 +145,12 @@ class _AddFeelingSheetState extends State<AddFeelingSheet> {
                   const SizedBox(height: 16),
                   // Кнопка сохранения настроения
                   ElevatedButton(
-                    onPressed: _saveFeeling,
+                    onPressed: () {
+                      _saveFeeling.call();
+                      Gaimon.selection();
+                    },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF6B75FF),
+                      backgroundColor: AppTheme.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
