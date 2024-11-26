@@ -4,12 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gaimon/gaimon.dart';
 import 'package:hive/hive.dart';
-import 'package:tt_27/models/goal.dart';
-import 'package:tt_27/models/training.dart';
-import 'package:tt_27/statistic_view/add_goal.dart';
-import 'package:tt_27/styles/app_theme.dart';
-import 'package:tt_27/widgets/goal_card.dart';
-import 'package:tt_27/widgets/weekly_statistic.dart';
+import 'package:peak_progress/models/goal.dart';
+import 'package:peak_progress/models/training.dart';
+import 'package:peak_progress/statistic_view/add_goal.dart';
+import 'package:peak_progress/styles/app_theme.dart';
+import 'package:peak_progress/widgets/goal_card.dart';
+import 'package:peak_progress/widgets/weekly_statistic.dart';
 
 class StatisticPage extends StatefulWidget {
   const StatisticPage({super.key});

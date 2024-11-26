@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:gaimon/gaimon.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
-import 'package:tt_27/models/training.dart';
-import 'package:tt_27/styles/app_theme.dart';
+import 'package:peak_progress/models/training.dart';
+import 'package:peak_progress/styles/app_theme.dart';
 
 class WeeklyStatisticsWidget extends StatefulWidget {
   const WeeklyStatisticsWidget({super.key});

@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:gaimon/gaimon.dart';
 import 'package:hive/hive.dart';
-import 'package:tt_27/models/goal.dart';
-import 'package:tt_27/styles/app_theme.dart';
+import 'package:peak_progress/models/goal.dart';
+import 'package:peak_progress/styles/app_theme.dart';
 
 class AddGoal extends StatefulWidget {
   final VoidCallback onSave;

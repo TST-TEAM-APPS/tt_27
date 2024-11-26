@@ -1,15 +1,57 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app_info/flutter_app_info.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:gaimon/gaimon.dart';
-import 'package:tt_27/styles/app_theme.dart';
+import 'package:peak_progress/repos/mixins/config_mixin.dart';
+import 'package:peak_progress/styles/app_theme.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
-class SettingsPage extends StatelessWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+class SettingsPage extends StatelessWidget with ConfigMixin {
+  SettingsPage({super.key});
+
+  void _showAppData({
+    required BuildContext context,
+    required String link,
+  }) =>
+      showCupertinoModalPopup(
+        context: context,
+        builder: (context) => CupertinoPopupSurface(
+          child: Container(
+            color: Colors.white,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                CupertinoButton(
+                  padding: const EdgeInsets.only(right: 10),
+                  onPressed: Navigator.of(context).pop,
+                  child: const Text(
+                    'Close',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: CupertinoColors.darkBackgroundGray,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: WebViewWidget(
+                    controller: WebViewController()
+                      ..loadRequest(
+                        Uri.parse(link),
+                      ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
+    final version = AppInfo.of(context).package.version;
     return Scaffold(
-      backgroundColor: AppTheme.background, // Фон страницы
+      backgroundColor: AppTheme.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -17,7 +59,7 @@ class SettingsPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 16),
-              // Заголовок
+
               const Text(
                 'Settings',
                 style: TextStyle(
@@ -36,7 +78,7 @@ class SettingsPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              // Карточки настроек
+
               Row(
                 children: [
                   Expanded(
@@ -44,9 +86,10 @@ class SettingsPage extends StatelessWidget {
                       icon: Icons.lock,
                       iconColor: AppTheme.primary,
                       title: 'Privacy Policy',
-                      onTap: () {
-                        // Действие нажатия
-                      },
+                      onTap: () => _showAppData(
+                        context: context,
+                        link: privacyLink,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -55,22 +98,27 @@ class SettingsPage extends StatelessWidget {
                       icon: Icons.description,
                       iconColor: AppTheme.primary,
                       title: 'Terms of Use',
-                      onTap: () {
-                        // Действие нажатия
-                      },
+                      onTap: () => _showAppData(
+                        context: context,
+                        link: termsLink,
+                      ),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-              // Карточка обратной связи
-              _buildFeedbackCard(),
+
+              _buildFeedbackCard(
+                () async => await FlutterEmailSender.send(
+                  Email(),
+                ),
+              ),
               const Spacer(),
-              // Версия приложения
+
               Center(
                 child: Column(
-                  children: const [
-                    Text(
+                  children: [
+                    const Text(
                       'Activity Diary',
                       style: TextStyle(
                         color: AppTheme.primary,
@@ -78,10 +126,10 @@ class SettingsPage extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
-                      'Version 0.1',
-                      style: TextStyle(
+                      'Version ${version.major}.${version.minor}.${version.patch}',
+                      style: const TextStyle(
                         color: Colors.grey,
                         fontSize: 12,
                       ),
@@ -138,7 +186,7 @@ class SettingsPage extends StatelessWidget {
   }
 
   // Карточка обратной связи
-  Widget _buildFeedbackCard() {
+  Widget _buildFeedbackCard(VoidCallback callback) {
     return Container(
       height: 170,
       decoration: BoxDecoration(
@@ -172,7 +220,7 @@ class SettingsPage extends StatelessWidget {
               height: 1.5,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Align(
@@ -183,6 +231,7 @@ class SettingsPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
               onPressed: () {
                 Gaimon.selection();
+                callback.call();
               },
               child: const Text(
                 'Send',

@@ -4,8 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gaimon/gaimon.dart';
 import 'package:hive/hive.dart';
-import 'package:tt_27/models/feeling.dart';
-import 'package:tt_27/styles/app_theme.dart';
+import 'package:peak_progress/models/feeling.dart';
+import 'package:peak_progress/styles/app_theme.dart';
 
 class AddFeelingSheet extends StatefulWidget {
   final Feeling? existingFeeling;

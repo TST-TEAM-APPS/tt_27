@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import 'package:tt_27/models/note.dart';
+import 'package:peak_progress/models/note.dart';
 
 part 'training.g.dart';
 

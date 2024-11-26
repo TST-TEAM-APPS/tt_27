@@ -1,50 +1,55 @@
-// main.dart
-
 import 'package:flutter/material.dart';
+import 'package:flutter_app_info/flutter_app_info.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:tt_27/models/feeling.dart';
-import 'package:tt_27/models/goal.dart';
-import 'package:tt_27/models/note.dart';
-import 'package:tt_27/models/training.dart';
-import 'package:tt_27/onboarding_view/onboarding_page.dart';
-import 'package:tt_27/bottom_navigation_bar/bottom_navigation_bar.dart';
+import 'package:peak_progress/models/feeling.dart';
+import 'package:peak_progress/models/goal.dart';
+import 'package:peak_progress/models/note.dart';
+import 'package:peak_progress/models/training.dart';
+import 'package:peak_progress/onboarding_view/initial_page.dart';
+import 'package:peak_progress/repos/flagsmith.dart';
+import 'package:peak_progress/repos/locator.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  final bindings = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: bindings);
   await Hive.initFlutter();
 
-  // Register adapters here
   Hive.registerAdapter(TrainingAdapter());
   Hive.registerAdapter(NoteAdapter());
   Hive.registerAdapter(GoalAdapter());
   Hive.registerAdapter(FeelingAdapter());
 
-  // Открытие Hive боксов
   await Hive.openBox<Training>('trainings');
   await Hive.openBox<Goal>('goals');
   await Hive.openBox<Feeling>('feelings');
-  await Hive.openBox('settings'); // Открытие бокса для настроек
+  await Hive.openBox('settings');
+  await Locator.setServices();
 
-  // Получение флага завершения онбординга
   var settingsBox = Hive.box('settings');
-  bool isOnboardingCompleted =
-      settingsBox.get('isOnboardingCompleted', defaultValue: false);
-
-  runApp(MainApp(isOnboardingCompleted: isOnboardingCompleted));
+  bool isFirstRun = settingsBox.get('isFirstRun', defaultValue: true);
+  WidgetsBinding.instance.addObserver(
+    AppLifecycleListener(onDetach: GetIt.instance<Flagsmith>().closeClient),
+  );
+  runApp(
+    AppInfo(
+      data: await AppInfoData.get(),
+      child: MainApp(isFirstRun: isFirstRun),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {
-  final bool isOnboardingCompleted;
+  final bool isFirstRun;
 
-  const MainApp({super.key, required this.isOnboardingCompleted});
+  const MainApp({super.key, required this.isFirstRun});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: isOnboardingCompleted
-          ? const CustomNavigationBar()
-          : const OnboardingScreen(),
-    );
+        title: 'PeakProgress Win',
+        debugShowCheckedModeBanner: false,
+        home: InitialPage(isFirstRun: isFirstRun));
   }
 }

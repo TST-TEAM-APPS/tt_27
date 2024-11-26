@@ -3,12 +3,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gaimon/gaimon.dart';
-import 'package:tt_27/bottom_navigation_bar/bottom_navigation_bar.dart';
-import 'package:tt_27/styles/app_theme.dart';
+import 'package:peak_progress/bottom_navigation_bar/bottom_navigation_bar.dart';
+import 'package:peak_progress/styles/app_theme.dart';
 import 'package:hive/hive.dart'; // Добавьте импорт Hive
 
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({Key? key}) : super(key: key);
+  const OnboardingScreen({super.key});
 
   @override
   _OnboardingScreenState createState() => _OnboardingScreenState();
@@ -91,7 +91,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 600,
                     ), // Заголовок
                     Text(

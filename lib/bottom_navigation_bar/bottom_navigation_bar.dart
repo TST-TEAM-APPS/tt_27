@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gaimon/gaimon.dart';
-import 'package:tt_27/home_view/add_training_bottom_sheet.dart';
-import 'package:tt_27/home_view/home_page.dart';
-import 'package:tt_27/setting_view/setting_page.dart';
-import 'package:tt_27/statistic_view/statistic_page.dart';
-import 'package:tt_27/styles/app_theme.dart';
+import 'package:peak_progress/home_view/add_training_bottom_sheet.dart';
+import 'package:peak_progress/home_view/home_page.dart';
+import 'package:peak_progress/setting_view/setting_page.dart';
+import 'package:peak_progress/statistic_view/statistic_page.dart';
+import 'package:peak_progress/styles/app_theme.dart';
 
 class CustomNavigationBar extends StatefulWidget {
   const CustomNavigationBar({super.key});
@@ -21,7 +21,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
   late final List<Widget> _pages = [
     HomePage(key: homePageKey),
     const StatisticPage(),
-    const SettingsPage(),
+    SettingsPage(),
     const HomePage(),
   ];
 

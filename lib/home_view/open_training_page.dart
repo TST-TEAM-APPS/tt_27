@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gaimon/gaimon.dart';
 import 'package:intl/intl.dart';
-import 'package:tt_27/models/training.dart';
-import 'package:tt_27/models/note.dart';
-import 'package:tt_27/styles/app_theme.dart';
-import 'package:tt_27/home_view/add_note.dart';
-import 'package:tt_27/home_view/add_training_bottom_sheet.dart';
+import 'package:peak_progress/models/training.dart';
+import 'package:peak_progress/models/note.dart';
+import 'package:peak_progress/styles/app_theme.dart';
+import 'package:peak_progress/home_view/add_note.dart';
+import 'package:peak_progress/home_view/add_training_bottom_sheet.dart';
 
 class OpenTrainingPage extends StatefulWidget {
   final Training training;

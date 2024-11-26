@@ -4,14 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gaimon/gaimon.dart';
 import 'package:hive_flutter/hive_flutter.dart'; // Используйте hive_flutter
-import 'package:tt_27/home_view/add_feeling_bottom_sheet.dart';
-import 'package:tt_27/home_view/open_training_page.dart';
-import 'package:tt_27/models/activity.dart';
-import 'package:tt_27/models/feeling.dart';
-import 'package:tt_27/models/training.dart';
-import 'package:tt_27/styles/app_theme.dart';
-import 'package:tt_27/widgets/daily_feeling_widget.dart';
-import 'package:tt_27/widgets/training_card_widget.dart';
+import 'package:peak_progress/home_view/add_feeling_bottom_sheet.dart';
+import 'package:peak_progress/home_view/open_training_page.dart';
+import 'package:peak_progress/models/activity.dart';
+import 'package:peak_progress/models/feeling.dart';
+import 'package:peak_progress/models/training.dart';
+import 'package:peak_progress/styles/app_theme.dart';
+import 'package:peak_progress/widgets/daily_feeling_widget.dart';
+import 'package:peak_progress/widgets/training_card_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
