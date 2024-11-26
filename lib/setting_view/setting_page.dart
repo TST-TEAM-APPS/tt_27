@@ -18,6 +18,7 @@ class SettingsPage extends StatelessWidget with ConfigMixin {
         context: context,
         builder: (context) => CupertinoPopupSurface(
           child: Container(
+            height: MediaQuery.of(context).size.height * 0.9,
             color: Colors.white,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -110,19 +111,24 @@ class SettingsPage extends StatelessWidget with ConfigMixin {
 
               _buildFeedbackCard(
                 () async => await FlutterEmailSender.send(
-                  Email(),
+                  Email(
+                    recipients: ['vorkopeta95@icloud.com'], 
+                    subject: 'Message to "PeakProgress Win" support',
+                    body: 'Put your message here...'
+                  ),
                 ),
               ),
-              const Spacer(),
+
+              const SizedBox(height: 40),
 
               Center(
                 child: Column(
                   children: [
                     const Text(
-                      'Activity Diary',
+                      'PeakProgress Win',
                       style: TextStyle(
                         color: AppTheme.primary,
-                        fontSize: 14,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -146,7 +152,6 @@ class SettingsPage extends StatelessWidget with ConfigMixin {
     );
   }
 
-  // Карточка настройки
   Widget _buildSettingsCard({
     required IconData icon,
     required Color iconColor,

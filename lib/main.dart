@@ -27,29 +27,27 @@ void main() async {
   await Hive.openBox('settings');
   await Locator.setServices();
 
-  var settingsBox = Hive.box('settings');
-  bool isFirstRun = settingsBox.get('isFirstRun', defaultValue: true);
+
   WidgetsBinding.instance.addObserver(
     AppLifecycleListener(onDetach: GetIt.instance<Flagsmith>().closeClient),
   );
   runApp(
     AppInfo(
       data: await AppInfoData.get(),
-      child: MainApp(isFirstRun: isFirstRun),
+      child: const MainApp(),
     ),
   );
 }
 
 class MainApp extends StatelessWidget {
-  final bool isFirstRun;
 
-  const MainApp({super.key, required this.isFirstRun});
+  const MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
         title: 'PeakProgress Win',
         debugShowCheckedModeBanner: false,
-        home: InitialPage(isFirstRun: isFirstRun));
+        home: InitialPage());
   }
 }
