@@ -1,7 +1,7 @@
 name: peak_progress
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.1+1
 
 environment:
   sdk: ^3.4.3
@@ -43,7 +43,7 @@ dev_dependencies:
   flutter_lints: ^4.0.0
   
 flutter_native_splash:
-  color: "#242321" 
+  color: "#FFFFFF" 
   image: assets/images/logo.png
 
 flutter_icons:
